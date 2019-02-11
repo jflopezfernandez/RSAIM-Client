@@ -17,7 +17,7 @@ public class Client extends JFrame{
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
-    private String defaultIPAddress = "47.197.62.146";
+    private String defaultIPAddress = "127.0.0.1";
     private int defaultSocket = 27015;
 
 
@@ -88,6 +88,7 @@ public class Client extends JFrame{
                 classNotFoundException.printStackTrace();
             } catch (EOFException eofException) {
                 showMessage("[Client]: Server terminated the connection...");
+                shutdownClientConnection();
             }
         } while(!message.equalsIgnoreCase("EXIT"));
     }
@@ -123,7 +124,7 @@ public class Client extends JFrame{
                 new Runnable() {
                     @Override
                     public void run() {
-                        MessageHistory.append(message + "\n");
+                        MessageHistory.append(String.format("%s\n", message));
                     }
                 }
         );
@@ -133,7 +134,7 @@ public class Client extends JFrame{
         try {
             outputStream.writeObject(message);
             outputStream.flush();
-            showMessage("[CLIENT]: " + message + "\n");
+            showMessage("[CLIENT]: " + message);
         } catch (IOException ioException) {
             MessageHistory.append("[ERROR]: " + ioException.getLocalizedMessage());
             ioException.printStackTrace();
