@@ -60,13 +60,13 @@ public class Client extends JFrame{
             ioException.printStackTrace();
         } finally {
             shutdownClientConnection();
+            System.exit(0);
         }
     }
 
     private void shutdownClientConnection() {
         showMessage("Closing client connection...\n");
         enableUserTyping(false);
-
         try {
             outputStream.close();
             inputStream.close();
@@ -86,9 +86,11 @@ public class Client extends JFrame{
             } catch (ClassNotFoundException classNotFoundException) {
                 showMessage("[ERROR]: " + classNotFoundException.getLocalizedMessage());
                 classNotFoundException.printStackTrace();
-            } catch (EOFException eofException) {
+            } catch (SocketException socketException) {
                 showMessage("[Client]: Server terminated the connection...");
                 shutdownClientConnection();
+                message = "exit";
+                socketException.printStackTrace();
             }
         } while(!message.equalsIgnoreCase("EXIT"));
     }
@@ -135,6 +137,9 @@ public class Client extends JFrame{
             outputStream.writeObject(message);
             outputStream.flush();
             showMessage("[CLIENT]: " + message);
+            if (message.equalsIgnoreCase("exit")) {
+                shutdownClientConnection();
+            }
         } catch (IOException ioException) {
             MessageHistory.append("[ERROR]: " + ioException.getLocalizedMessage());
             ioException.printStackTrace();
